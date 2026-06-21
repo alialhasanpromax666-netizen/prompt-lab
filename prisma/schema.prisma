@@ -26,6 +26,7 @@ model User {
   skills       Skill[]
   skillLikes   SkillLike[]
   savedSkills  SavedSkill[]
+  eventLogs    EventLog[]
 }
 
 model Account {
