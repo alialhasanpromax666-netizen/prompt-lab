@@ -43,14 +43,18 @@ export async function POST(req: Request) {
       data: { name, email, password: hashedPassword },
     });
 
-    await prisma.eventLog.create({
-      data: {
-        type: "register",
-        message: `تسجيل مستخدم جديد: ${name ?? email}`,
-        userId: user.id,
-        metadata: JSON.stringify({ name, email }),
-      },
-    });
+    try {
+      await prisma.eventLog.create({
+        data: {
+          type: "register",
+          message: `تسجيل مستخدم جديد: ${name ?? email}`,
+          userId: user.id,
+          metadata: JSON.stringify({ name, email }),
+        },
+      });
+    } catch {
+      // non-critical; registration still succeeds
+    }
 
     return NextResponse.json(
       {
@@ -61,9 +65,11 @@ export async function POST(req: Request) {
       },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Register error:", error);
+    const message = error instanceof Error ? error.message : "حدث خطأ أثناء التسجيل";
     return NextResponse.json(
-      { error: "حدث خطأ أثناء التسجيل" },
+      { error: message },
       { status: 500 }
     );
   }
