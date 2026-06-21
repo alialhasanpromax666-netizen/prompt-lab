@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import { categories } from "@/data/categories";
 import { SITE_TAGLINE, SITE_DESCRIPTION } from "@/lib/constants";
-import { MagicWand } from "@phosphor-icons/react";
+import { MagicWand, UserCircle } from "@phosphor-icons/react";
 
 export default function Home() {
+  const { data: session } = useSession();
   const [totalPrompts, setTotalPrompts] = useState(0);
 
   useEffect(() => {
@@ -74,6 +76,19 @@ export default function Home() {
                 </Button>
               </Link>
             </motion.div>
+
+            {!session && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.35 }}
+                className="mt-5 text-xs text-text-muted"
+              >
+                <Link href="/login" className="text-accent hover:underline font-medium">دخول</Link>
+                {" · "}
+                <Link href="/register" className="text-accent hover:underline font-medium">تسجيل</Link>
+              </motion.p>
+            )}
           </div>
         </div>
       </section>
