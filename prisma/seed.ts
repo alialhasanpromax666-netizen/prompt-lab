@@ -48,8 +48,8 @@ async function main() {
   }
 
   await prisma.$executeRawUnsafe(`
-    UPDATE Category SET promptCount = (
-      SELECT COUNT(*) FROM Prompt WHERE Prompt.categoryId = Category.id
+    UPDATE "Category" SET "promptCount" = (
+      SELECT COUNT(*) FROM "Prompt" WHERE "Prompt"."categoryId" = "Category"."id"
     )
   `);
 
