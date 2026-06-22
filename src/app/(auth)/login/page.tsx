@@ -33,6 +33,9 @@ function LoginForm() {
           redirect: false,
         });
 
+        console.log("[login-debug] sent email:", form.email, "password length:", form.password.length);
+        console.log("[login-debug] result:", JSON.stringify(result));
+
         if (result?.error) {
           setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
           return;
