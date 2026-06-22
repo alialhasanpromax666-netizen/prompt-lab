@@ -75,7 +75,13 @@ export const usePromptStore = create<PromptStore>()(
           fetch("/api/user/saved", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ promptId: prompt.id }),
+            body: JSON.stringify({
+              promptId: prompt.id,
+              title: prompt.title,
+              content: prompt.content,
+              tips: prompt.tips,
+              categoryId: prompt.categoryId,
+            }),
           }).catch(() => {});
         }
       },

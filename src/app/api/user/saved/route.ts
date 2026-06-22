@@ -32,16 +32,46 @@ export async function POST(request: NextRequest) {
     const user = await getAuthUser();
     if (!user) return errorResponse("غير مصرح", 401);
 
-    const { promptId } = await request.json();
+    const body = await request.json();
+    const { promptId, title, content, tips, categoryId, level } = body as {
+      promptId?: string;
+      title?: string;
+      content?: string;
+      tips?: string[];
+      categoryId?: string;
+      level?: string;
+    };
+
     if (!promptId) return errorResponse("معرف البرومت مطلوب", 400);
 
+    let realPromptId = promptId;
+    const existingPrompt = await prisma.prompt.findUnique({ where: { id: promptId } });
+    if (!existingPrompt) {
+      if (!title || !content || !categoryId) {
+        return errorResponse("البرومت غير موجود وبياناته ناقصة", 400);
+      }
+      const created = await prisma.prompt.create({
+        data: {
+          id: promptId,
+          title,
+          content,
+          tips: JSON.stringify(tips ?? []),
+          categoryId,
+          level: level ?? "intermediate",
+          isPublic: false,
+          authorId: user.id,
+        },
+      });
+      realPromptId = created.id;
+    }
+
     const existing = await prisma.savedPrompt.findUnique({
-      where: { userId_promptId: { userId: user.id, promptId } },
+      where: { userId_promptId: { userId: user.id, promptId: realPromptId } },
     });
     if (existing) return errorResponse("البرومت محفوظ مسبقاً", 409);
 
     const saved = await prisma.savedPrompt.create({
-      data: { userId: user.id, promptId },
+      data: { userId: user.id, promptId: realPromptId },
     });
 
     return apiResponse(saved, 201);
