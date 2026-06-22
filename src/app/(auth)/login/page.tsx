@@ -33,9 +33,6 @@ function LoginForm() {
           redirect: false,
         });
 
-        console.log("[login-debug] sent email:", form.email, "password length:", form.password.length);
-        console.log("[login-debug] result:", JSON.stringify(result));
-
         if (result?.error) {
           setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
           return;
@@ -93,7 +90,9 @@ function LoginForm() {
           <form onSubmit={handleSubmit} className="space-y-3.5" dir="rtl">
             <Input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
               label="البريد الإلكتروني"
               placeholder="you@example.com"
               value={form.email}
@@ -104,7 +103,9 @@ function LoginForm() {
             <div className="relative">
               <Input
                 id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 label="كلمة المرور"
                 placeholder="••••••••"
                 value={form.password}
