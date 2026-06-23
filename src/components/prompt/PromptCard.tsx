@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { Copy, Check, Heart, HeartBreak, ThumbsUp } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import CompanySaveButton from "@/components/prompt/CompanySaveButton";
 
 import { EXPERIENCE_LEVELS } from "@/lib/constants";
 import { usePromptStore } from "@/store/promptStore";
@@ -103,15 +104,7 @@ export function PromptCard({ prompt, index = 0, onLike, isLiked, onView }: Promp
               ))}
             </div>
           </div>
-          <button
-            onClick={handleSave}
-            className={cn(
-              "shrink-0 transition-colors",
-              saved ? "text-danger" : "text-text-muted hover:text-text-secondary"
-            )}
-          >
-            {saved ? <HeartBreak weight="fill" className="size-3.5" /> : <Heart weight="bold" className="size-3.5" />}
-          </button>
+          <CompanySaveButton prompt={{ id: prompt.id, title: prompt.title }} />
         </div>
 
         <p className="text-xs text-text-secondary leading-relaxed line-clamp-2 mb-3 font-mono">

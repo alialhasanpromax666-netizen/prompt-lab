@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Copy, Check, ShareNetwork, DownloadSimple, HeartBreak, BookmarkSimple, CloudArrowUp } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import CompanySaveButton from "@/components/prompt/CompanySaveButton";
 import { useClipboard } from "@/hooks/useClipboard";
 import { usePromptStore } from "@/store/promptStore";
 import { showToast } from "@/components/ui/Toast";
@@ -171,16 +172,7 @@ export function PromptDetailModal({ prompt, onClose }: PromptDetailModalProps) {
               {copied ? "تم النسخ" : "نسخ"}
             </button>
 
-            <button
-              onClick={handleSave}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                saved ? "bg-danger/10 text-danger" : "text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
-              )}
-            >
-              {saved ? <HeartBreak weight="fill" className="size-3.5" /> : <BookmarkSimple weight="bold" className="size-3.5" />}
-              {saved ? "إزالة" : "حفظ"}
-            </button>
+            <CompanySaveButton prompt={{ id: data.id, title: data.title }} />
 
             <button
               onClick={handleShare}

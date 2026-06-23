@@ -37,7 +37,7 @@ interface PromptStore {
   recentGenerations: GeneratedPrompt[];
   user: User | null;
   isLoading: boolean;
-  addToSaved: (prompt: GeneratedPrompt) => void;
+  addToSaved: (prompt: GeneratedPrompt, companyId?: string | null) => void;
   removeFromSaved: (id: string) => void;
   isSaved: (id: string) => boolean;
   addToHistory: (prompt: GeneratedPrompt) => void;
@@ -62,7 +62,7 @@ export const usePromptStore = create<PromptStore>()(
         return get().user !== null;
       },
 
-      addToSaved: (prompt) => {
+      addToSaved: (prompt, companyId) => {
         const existing = get().savedPrompts.find((p) => p.id === prompt.id);
         if (existing) return;
         set((state) => ({
@@ -81,6 +81,7 @@ export const usePromptStore = create<PromptStore>()(
               content: prompt.content,
               tips: prompt.tips,
               categoryId: prompt.categoryId,
+              companyId: companyId ?? undefined,
             }),
           }).catch(() => {});
         }

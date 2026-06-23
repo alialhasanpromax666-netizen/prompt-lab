@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Copy, Check, Heart, HeartBreak, ShareNetwork, ArrowsClockwise, Sparkle, DownloadSimple, CloudArrowUp } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import CompanySaveButton from "@/components/prompt/CompanySaveButton";
 import { usePromptStore } from "@/store/promptStore";
 import { useClipboard } from "@/hooks/useClipboard";
 import { showToast } from "@/components/ui/Toast";
@@ -122,16 +123,7 @@ export function PromptResult({ prompt, onRegenerate, onEnhance, enhancing, enhan
             {copied ? "تم النسخ" : "نسخ"}
           </button>
 
-          <button
-            onClick={handleSave}
-            className={cn(
-              "flex items-center gap-1 transition-colors",
-              saved ? "text-danger" : "text-text-muted hover:text-text-primary"
-            )}
-          >
-            {saved ? <HeartBreak weight="fill" className="size-3" /> : <Heart weight="bold" className="size-3" />}
-            {saved ? "إزالة" : "حفظ"}
-          </button>
+          <CompanySaveButton prompt={prompt} />
 
           <button
             onClick={handleShare}
