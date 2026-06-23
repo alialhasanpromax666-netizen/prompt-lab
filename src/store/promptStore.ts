@@ -30,6 +30,7 @@ interface User {
 interface SavedPrompt extends Omit<GeneratedPrompt, "createdAt"> {
   savedAt: string;
   createdAt: string;
+  companyId?: string | null;
 }
 
 interface PromptStore {
@@ -124,10 +125,11 @@ export const usePromptStore = create<PromptStore>()(
             const json = await res.json();
             const list = Array.isArray(json?.data) ? json.data : [];
             const saved: SavedPrompt[] = list
-              .map((row: { prompt: SavedPrompt & { createdAt: string }; createdAt: string }) => ({
+              .map((row: { prompt: SavedPrompt & { createdAt: string }; createdAt: string; companyId?: string | null }) => ({
                 ...row.prompt,
                 createdAt: row.prompt.createdAt ?? row.createdAt,
                 savedAt: row.createdAt,
+                companyId: row.companyId ?? null,
               }));
             set({ savedPrompts: saved });
           }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Copy, Check, ShareNetwork, DownloadSimple, HeartBreak, BookmarkSimple, CloudArrowUp } from "@phosphor-icons/react";
+import { PromptResult } from "./PromptResult";
 import { cn } from "@/lib/utils";
 import CompanySaveButton from "@/components/prompt/CompanySaveButton";
 import { useClipboard } from "@/hooks/useClipboard";
@@ -14,6 +15,7 @@ interface ModalPrompt {
   title: string;
   content: string;
   categoryId: string;
+  companyId?: string | null;
   level?: string;
   tags?: string[] | string;
   author?: { id: string; name: string; image?: string } | null;
@@ -31,6 +33,8 @@ export function PromptDetailModal({ prompt, onClose }: PromptDetailModalProps) {
 
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
+  const [genLoading, setGenLoading] = useState(false);
+  const [genResult, setGenResult] = useState<any | null>(null);
 
   if (!prompt) return null;
   const data = prompt;
@@ -144,12 +148,18 @@ export function PromptDetailModal({ prompt, onClose }: PromptDetailModalProps) {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-5">
-            <div className="bg-surface rounded-xl p-4 border border-border-light">
-              <pre className="text-xs sm:text-sm text-text-secondary leading-relaxed font-mono whitespace-pre-wrap rtl:text-right">
-                {data.content}
-              </pre>
-            </div>
+            <div className="flex-1 overflow-y-auto p-5">
+              <div className="bg-surface rounded-xl p-4 border border-border-light">
+                <pre className="text-xs sm:text-sm text-text-secondary leading-relaxed font-mono whitespace-pre-wrap rtl:text-right">
+                  {data.content}
+                </pre>
+              </div>
+
+              {genResult && (
+                <div className="mt-4">
+                  <PromptResult prompt={genResult} />
+                </div>
+              )}
 
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
@@ -198,6 +208,40 @@ export function PromptDetailModal({ prompt, onClose }: PromptDetailModalProps) {
               >
                 <CloudArrowUp weight={publishing ? "fill" : "bold"} className={cn("size-3.5", publishing && "animate-pulse")} />
                 {publishing ? "جارٍ النشر..." : "نشر للمجتمع"}
+              </button>
+            )}
+
+            {user && (
+              <button
+                onClick={async () => {
+                  setGenLoading(true);
+                  try {
+                    const res = await fetch('/api/generate', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        categoryId: data.categoryId,
+                        categoryName: '',
+                        goal: data.title,
+                        keywords: [],
+                        style: 'detailed',
+                        audience: undefined,
+                        companyId: (data as any).companyId ?? undefined,
+                      }),
+                    });
+                    const json = await res.json();
+                    if (!res.ok || !json.success) throw new Error(json.error || 'فشل التوليد');
+                    setGenResult(json.data);
+                  } catch (err) {
+                    showToast(err instanceof Error ? err.message : 'فشل التوليد', 'error');
+                  } finally {
+                    setGenLoading(false);
+                  }
+                }}
+                disabled={genLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-accent hover:text-accent/80 hover:bg-accent/5 transition-all"
+              >
+                {genLoading ? 'جارٍ التوليد...' : 'استخدم للتوليد'}
               </button>
             )}
           </div>

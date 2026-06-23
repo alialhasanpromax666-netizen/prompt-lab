@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { usePromptStore } from "@/store/promptStore";
 import { PromptCard } from "@/components/prompt/PromptCard";
@@ -14,11 +14,23 @@ export default function SavedPage() {
   const { savedPrompts, clearAll } = usePromptStore();
   const [viewingId, setViewingId] = useState<string | null>(null);
   const viewingPrompt = viewingId ? savedPrompts.find((p) => p.id === viewingId) ?? null : null;
+  const [filter, setFilter] = useState<"all" | "my" | "company">("all");
+  const [companiesMap, setCompaniesMap] = useState<Record<string, string>>({});
 
   const handleClearAll = () => {
     clearAll();
     showToast("تم مسح جميع المحفوظات", "info");
   };
+
+  useEffect(() => {
+    fetch('/api/user/company').then((r) => r.json()).then((j) => {
+      if (j?.success) {
+        const map: Record<string, string> = {};
+        (j.data ?? []).forEach((c: any) => (map[c.id] = c.name));
+        setCompaniesMap(map);
+      }
+    }).catch(() => {});
+  }, []);
 
   return (
     <main className="pt-24 pb-16 min-h-screen">
@@ -32,35 +44,46 @@ export default function SavedPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-text-primary">البرومتات المحفوظة</h1>
-              <p className="text-sm text-text-secondary mt-1">
-                {savedPrompts.length} برومت محفوظ
-              </p>
+              <p className="text-sm text-text-secondary mt-1">{savedPrompts.length} برومت محفوظ</p>
             </div>
-            {savedPrompts.length > 0 && (
-              <Button variant="danger" size="sm" onClick={handleClearAll} icon={<Trash weight="bold" className="size-4" />}>
-                مسح الكل
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <select value={filter} onChange={(e) => setFilter(e.target.value as any)} className="h-9 px-3 rounded-xl bg-surface-elevated border border-border text-sm">
+                <option value="all">الكل</option>
+                <option value="my">خاص بي</option>
+                <option value="company">خاص بالشركة</option>
+              </select>
+              {savedPrompts.length > 0 && (
+                <Button variant="danger" size="sm" onClick={handleClearAll} icon={<Trash weight="bold" className="size-4" />}>
+                  مسح الكل
+                </Button>
+              )}
+            </div>
           </div>
         </motion.div>
 
         {savedPrompts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {savedPrompts.map((prompt, i) => (
-              <PromptCard
-                key={prompt.id}
-                prompt={{
-                  id: prompt.id,
-                  categoryId: prompt.categoryId,
-                  title: prompt.title,
-                  content: prompt.content,
-                  level: "intermediate",
-                  tags: [],
-                  usageCount: 0,
-                }}
-                index={i}
-                onView={(p) => setViewingId(p.id)}
-              />
+            {savedPrompts
+              .filter((p) => {
+                if (filter === 'all') return true;
+                if (filter === 'my') return !p.companyId;
+                return !!p.companyId;
+              })
+              .map((prompt, i) => (
+                <PromptCard
+                  key={prompt.id}
+                  prompt={{
+                    id: prompt.id,
+                    categoryId: prompt.categoryId,
+                    title: prompt.title,
+                    content: prompt.content,
+                    level: "intermediate",
+                    tags: [],
+                    usageCount: 0,
+                  }}
+                  index={i}
+                  onView={(p) => setViewingId(p.id)}
+                />
             ))}
           </div>
         ) : (
@@ -100,6 +123,7 @@ export default function SavedPage() {
             title: viewingPrompt.title,
             content: viewingPrompt.content,
             categoryId: viewingPrompt.categoryId,
+            companyId: viewingPrompt.companyId ?? null,
           }}
           onClose={() => setViewingId(null)}
         />
