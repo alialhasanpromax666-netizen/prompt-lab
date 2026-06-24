@@ -27,6 +27,7 @@ model User {
   skillLikes   SkillLike[]
   savedSkills  SavedSkill[]
   eventLogs    EventLog[]
+  adminNotes   AdminNote[]
   companiesOwned Company[]
   companyMembers CompanyMember[]
 }
@@ -201,6 +202,20 @@ model EventLog {
 
   @@index([type])
   @@index([createdAt])
+}
+
+model AdminNote {
+  id         String   @id @default(cuid())
+  content    String
+  targetType String
+  targetId   String
+  authorId   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
 }
 
 enum CompanyRole {

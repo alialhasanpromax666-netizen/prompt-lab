@@ -10,6 +10,7 @@ import { showToast } from "@/components/ui/Toast";
 import { useClipboard } from "@/hooks/useClipboard";
 import { usePromptStore } from "@/store/promptStore";
 import { cn } from "@/lib/utils";
+import AdminNotes from "@/components/admin/AdminNotes";
 import { ArrowRight, Copy, Check, Lightning, Share, BookmarkSimple, HeartBreak, Sparkle, FloppyDisk } from "@phosphor-icons/react";
 
 interface SkillDetail {
@@ -229,6 +230,10 @@ export default function SkillDetailPage({ params }: Props) {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="mt-4">
+            <AdminNotes targetType="skill" targetId={skill.id} />
           </div>
         </motion.div>
       </div>

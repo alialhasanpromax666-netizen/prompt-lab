@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 import { showToast } from "@/components/ui/Toast";
 import { Modal } from "@/components/ui/Modal";
+import AdminNotes from "@/components/admin/AdminNotes";
 import {
   Users, Quotes, Tag, Trash, Pencil, Shield, ArrowLeft, Plus,
   MagnifyingGlass, CaretLeft, CaretRight, Eye, EyeSlash,
@@ -274,6 +275,10 @@ export default function AdminPage() {
                       ))}
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-4">
+                  <AdminNotes targetType="global" targetId="dashboard" />
                 </div>
               </motion.div>
             )}

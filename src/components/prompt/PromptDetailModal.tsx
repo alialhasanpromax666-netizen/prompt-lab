@@ -6,6 +6,7 @@ import { X, Copy, Check, ShareNetwork, DownloadSimple, HeartBreak, BookmarkSimpl
 import { PromptResult } from "./PromptResult";
 import { cn } from "@/lib/utils";
 import CompanySaveButton from "@/components/prompt/CompanySaveButton";
+import AdminNotes from "@/components/admin/AdminNotes";
 import { useClipboard } from "@/hooks/useClipboard";
 import { usePromptStore } from "@/store/promptStore";
 import { showToast } from "@/components/ui/Toast";
@@ -168,6 +169,10 @@ export function PromptDetailModal({ prompt, onClose }: PromptDetailModalProps) {
                 ))}
               </div>
             )}
+
+            <div className="mt-4 border-t border-border-light pt-4">
+              <AdminNotes targetType="prompt" targetId={data.id} />
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-t border-border-light shrink-0 bg-surface/50">
