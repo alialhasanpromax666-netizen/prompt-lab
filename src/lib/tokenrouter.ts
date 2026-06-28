@@ -22,9 +22,9 @@ export async function generateWithTokenRouter(
           { role: "user", content: userPrompt },
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 2000,
       }),
-      signal: AbortSignal.timeout ? AbortSignal.timeout(8000) : (() => { const c = new AbortController(); setTimeout(() => c.abort(), 8000); return c.signal; })(),
+      signal: AbortSignal.timeout ? AbortSignal.timeout(55000) : (() => { const c = new AbortController(); setTimeout(() => c.abort(), 55000); return c.signal; })(),
     });
 
     if (!res.ok) {

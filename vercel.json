@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "src/app/api/generate/**/*.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/skills/generate/**/*.ts": {
+      "maxDuration": 60
+    }
+  }
+}
