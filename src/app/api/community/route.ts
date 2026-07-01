@@ -1,8 +1,10 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { apiResponse, errorResponse } from "@/lib/api-helpers";
+import { apiResponse, errorResponse, getAuthUser } from "@/lib/api-helpers";
 
 export async function GET(request: NextRequest) {
+  const user = await getAuthUser();
+  if (!user) return errorResponse("غير مصرح", 401);
   try {
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));

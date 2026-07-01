@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { apiResponse, errorResponse } from "@/lib/api-helpers";
+import { apiResponse, errorResponse, getAuthUser } from "@/lib/api-helpers";
 import { generateWithTokenRouter } from "@/lib/tokenrouter";
 
 const generateSchema = z.object({
@@ -33,6 +33,9 @@ const SYSTEM_PROMPT = `أنت خبير في تصميم مهارات (Skills) ل�
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthUser();
+    if (!user) return errorResponse("غير مصرح", 401);
+
     const body = await request.json();
     const parsed = generateSchema.safeParse(body);
     if (!parsed.success) return errorResponse(parsed.error.issues[0]?.message ?? "بيانات غير صالحة", 400);

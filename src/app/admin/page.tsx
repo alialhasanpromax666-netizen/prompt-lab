@@ -325,16 +325,16 @@ export default function AdminPage() {
                             <td className="px-4 py-3 text-text-secondary hidden md:table-cell">{u._count.prompts}</td>
                             <td className="px-4 py-3 text-text-secondary hidden lg:table-cell">
                               <div className="flex items-center gap-1">
-                                <input
-                                  type="number"
-                                  min={1}
-                                  max={1000}
+                                <select
                                   defaultValue={u.dailyGenLimit}
-                                  onBlur={e => { const v = parseInt(e.target.value); if (!isNaN(v) && v !== u.dailyGenLimit) handleUpdateLimit(u.id, v); }}
-                                  onKeyDown={e => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
-                                  className="w-16 h-7 px-1.5 rounded-md bg-surface-elevated border border-border text-xs text-center text-text-primary focus:outline-none focus:border-accent/50"
-                                />
-                                <span className="text-[10px] text-text-muted">/ {u.dailyGenCount} اليوم</span>
+                                  onChange={e => handleUpdateLimit(u.id, parseInt(e.target.value))}
+                                  className="w-14 h-7 px-1 rounded-md bg-surface-elevated border border-border text-xs text-center text-text-primary focus:outline-none focus:border-accent/50 cursor-pointer"
+                                >
+                                  {[5, 10, 20, 50, 100, 500, 1000, 99999].map(n => (
+                                    <option key={n} value={n}>{n === 99999 ? "∞" : n}</option>
+                                  ))}
+                                </select>
+                                <span className="text-[10px] text-text-muted whitespace-nowrap">/ {u.dailyGenCount} اليوم</span>
                               </div>
                             </td>
                             <td className="px-4 py-3 text-text-secondary hidden lg:table-cell">{new Date(u.createdAt).toLocaleDateString("ar-SA")}</td>

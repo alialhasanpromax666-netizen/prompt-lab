@@ -4,21 +4,25 @@ import { authConfig } from "@/lib/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
+const publicRoutes = ["/", "/login", "/register"];
+
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  const isDashboard = nextUrl.pathname.startsWith("/dashboard");
-  const isAdmin = nextUrl.pathname.startsWith("/admin");
+  const pathname = nextUrl.pathname;
 
-  if (isDashboard && !isLoggedIn) {
+  // allow public routes
+  if (publicRoutes.includes(pathname)) {
+    return NextResponse.next();
+  }
+
+  // protect everything else (pages only, API routes handle auth themselves)
+  if (!isLoggedIn) {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  if (isAdmin && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", nextUrl));
-  }
-
-  if (isAdmin && req.auth?.user?.role !== "admin") {
+  // admin-only pages
+  if (pathname.startsWith("/admin") && req.auth?.user?.role !== "admin") {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
@@ -26,5 +30,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
